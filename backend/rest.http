@@ -1,0 +1,21 @@
+### 🟢 Signup Test
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "securepassword"
+}
+
+### 🟢 Login Test
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "securepassword"
+}
+
+### 🟢 Get Protected Route (After Login - Replace Token)
+GET http://localhost:3000/auth/protected
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJzdWIiOiIxZDRjNGUwNy1hNzg4LTQ0YzUtYjMyNS1lZmI0NGNiMTQ5YTkiLCJpYXQiOjE3NDExNzQ1MzMsImV4cCI6MTc0MTE3ODEzM30.7a0Ifjd-RnybLwS2fuU8L1trmx-xcBugBPKE9avLQaY
