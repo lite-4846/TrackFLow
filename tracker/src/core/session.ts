@@ -2,6 +2,12 @@ import { generateUUID } from "../utils/uuid";
 import { Storage } from "../utils/storage";
 import { Config } from "../core/config";
 
+type DeviceInfo = {
+  deviceType: string | undefined,
+  os: string | undefined,
+  browser: string | undefined
+}
+
 export class Session {
   private static SESSION_KEY = "trackflow_session";
   private static USER_KEY = "trackflow_user";
@@ -10,7 +16,7 @@ export class Session {
   sessionId: string;
   userId: string | null;
   sessionStart: number;
-  deviceInfo: string;
+  deviceInfo: DeviceInfo;
 
   constructor() {
     this.sessionId = this.getSessionId();
@@ -48,11 +54,14 @@ export class Session {
   }
 
   /** Retrieves device information (mobile vs. desktop) */
-  private getDeviceInfo(): string {
-    let device = Storage.getItem<string>(Session.DEVICE_KEY);
+  private getDeviceInfo(): DeviceInfo {
+    let device : DeviceInfo = JSON.parse(Storage.getItem<string>(Session.DEVICE_KEY) ?? '{}');
     if (!device) {
-      const ua = navigator.userAgent.toLowerCase();
-      device = /mobile|android|iphone|ipad|ipod/.test(ua) ? "mobile" : "desktop";
+      device = {
+        deviceType: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        os: navigator.userAgent.match(/Windows|Mac|Linux|Android|iPhone|iPad/)?.[0] || 'unknown',
+        browser: navigator.userAgent.match(/Chrome|Firefox|Safari|Edge|Opera/)?.[0] || 'unknown',
+      };
       Storage.setItem(Session.DEVICE_KEY, device, Config.SESSION_TIMEOUT, true);
     }
     return device;

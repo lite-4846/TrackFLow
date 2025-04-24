@@ -20,6 +20,14 @@ export class Tracker {
     this.session = new Session();
   }
 
+  generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16;
+      const v = c === 'x' ? r : (r % 4) + 8;
+      return v.toString(16);
+    });
+  }
+
   /**
    * Initializes the tracker as a singleton.
    */
@@ -47,12 +55,19 @@ export class Tracker {
     }
 
     const eventData = {
-      event: eventName,
+      eventId: this.generateUUID(),
+      eventType: eventName,
+
       properties,
+
       sessionId: this.session.sessionId,
       userId: this.session.userId,
-      deviceInfo: this.session.deviceInfo,
       timestamp: Date.now(),
+
+      pageUrl: window.location.href,
+      referrer: document.referrer || null,
+
+      deviceInfo: this.session.deviceInfo,
     };
 
     console.log('Tracking event:', eventData);

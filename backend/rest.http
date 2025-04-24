@@ -19,3 +19,14 @@ Content-Type: application/json
 ### 🟢 Get Protected Route (After Login - Replace Token)
 GET http://localhost:3000/auth/protected
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJzdWIiOiIxZDRjNGUwNy1hNzg4LTQ0YzUtYjMyNS1lZmI0NGNiMTQ5YTkiLCJpYXQiOjE3NDExNzQ1MzMsImV4cCI6MTc0MTE3ODEzM30.7a0Ifjd-RnybLwS2fuU8L1trmx-xcBugBPKE9avLQaY
+
+### 🟢 Post Request Lucio
+POST https://workwithus.lucioai.com/get-started HTTP/1.1
+Content-Type: application/json
+{
+  "name": "Vedant Chaudhari",
+  "email": "work.chvedant@gmail.com"
+}
+
+GET https://workwithus.lucioai.com/access-check HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVmVkYW50IENoYXVkaGFyaSIsImVtYWlsIjoid29yay5jaHZlZGFudEBnbWFpbC5jb20iLCJkYXRlIjoiMjAyNS0wNC0xNyAwMjozODoyNSJ9.-VVSWehdyCjQaFUPdVqFSV-g5bVTWv-1dVgRMHzGx5k
