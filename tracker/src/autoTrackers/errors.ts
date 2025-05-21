@@ -1,4 +1,4 @@
-import { Tracker } from "../core/tracker";
+import { Tracker } from '../core/tracker';
 
 // errors.ts
 export class ErrorTracker {
@@ -9,19 +9,16 @@ export class ErrorTracker {
   }
 
   handleError = (event: ErrorEvent) => {
-    this.tracker.track(
-      "error",
-      {
-        message: event.message,
-        source: event.filename,
-        line: event.lineno,
-        col: event.colno,
-        stack: event.error?.stack || null,
-      },
-    );
+    this.tracker.track('error', {
+      message: event.message,
+      source: event.filename,
+      line: event.lineno,
+      col: event.colno,
+      stack: event.error?.stack || null,
+    });
   };
 
   init() {
-    window.addEventListener("error", this.handleError);
+    window.addEventListener('error', this.handleError);
   }
 }

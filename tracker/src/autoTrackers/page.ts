@@ -11,7 +11,6 @@ export class PageTracker {
 
   trackPageView() {
     this.tracker.track('page_view', {
-      url: window.location.href,
       title: document.title,
     });
   }

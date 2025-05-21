@@ -57,6 +57,7 @@ export class Tracker {
     const eventData = {
       eventId: this.generateUUID(),
       eventType: eventName,
+      tenantId: this.apiKey,
 
       properties,
 
