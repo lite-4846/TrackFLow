@@ -1,0 +1,540 @@
+[
+  [
+    {
+      "events": [
+        {
+          "event": "click",
+          "properties": {
+            "tag": "BUTTON",
+            "id": null,
+            "classList": "px-4 py-2 border  font-semibold border-2 border-gray-600"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841798607
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "A",
+            "id": null,
+            "classList": "font-semibold text-gray-700"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841800160
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "IMG",
+            "id": null,
+            "classList": "w-full h-full"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841801951
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "event": "click",
+          "properties": {
+            "tag": "LABEL",
+            "id": null,
+            "classList": "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex h-9 w-9 items-center justify-center rounded-md border border-muted bg-second hover:border-black hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-primary-foreground"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841806168
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "BUTTON",
+            "id": "size-L",
+            "classList": "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 peer sr-only"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841806186
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "DIV",
+            "id": null,
+            "classList": "mt-2 text-sm"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841806949
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "BUTTON",
+            "id": null,
+            "classList": "px-4 py-2 border  font-semibold border-2 border-gray-600"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841807467
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "DIV",
+            "id": null,
+            "classList": "mt-2 text-sm"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841807980
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "BUTTON",
+            "id": null,
+            "classList": "px-4 py-2 border  font-semibold border-2 border-gray-600"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841808541
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "DIV",
+            "id": null,
+            "classList": "col-span-4 lg:col-span-4 flex flex-col gap-4 px-2 mt-4 sm:mt-0"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841809090
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "BUTTON",
+            "id": null,
+            "classList": "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-9 px-4 py-2 flex-1 border border-gray-400 hover:border-black"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841809572
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "A",
+            "id": null,
+            "classList": null
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841810996
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "INPUT",
+            "id": "name",
+            "classList": "rounded border border-gray-500 bg-white w-full p-1 text-black px-2"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841812163
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "A",
+            "id": null,
+            "classList": "font-semibold text-gray-700"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841813051
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "IMG",
+            "id": null,
+            "classList": "w-full h-full"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841813710
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "A",
+            "id": null,
+            "classList": "font-semibold text-gray-700"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841814899
+        }
+      ]
+    }
+  ],
+  [
+    {
+      "events": [
+        {
+          "event": "click",
+          "properties": {
+            "tag": "IMG",
+            "id": null,
+            "classList": "w-full h-full"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841815538
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "A",
+            "id": null,
+            "classList": "font-semibold text-gray-700"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841818072
+        },
+        {
+          "event": "click",
+          "properties": {
+            "tag": "IMG",
+            "id": null,
+            "classList": "w-full h-full"
+          },
+          "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+          "userId": null,
+          "deviceInfo": "desktop",
+          "timestamp": 1747841819197
+        }
+      ]
+    }
+  ]
+]
+[
+  {
+    "events": [
+      {
+        "event": "click",
+        "properties": {
+          "tag": "A",
+          "id": null,
+          "classList": "font-semibold text-gray-700"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842046463
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "IMG",
+          "id": null,
+          "classList": "w-full h-full"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842047486
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "BUTTON",
+          "id": null,
+          "classList": "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 flex-1"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842049169
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "cursor-pointer flex flex-col flex-1"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842051353
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "cursor-pointer flex flex-col flex-1"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842051904
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "cursor-pointer flex flex-col flex-1"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842052084
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "INPUT",
+          "id": "email",
+          "classList": "rounded border border-black bg-beige w-full p-1 text-black px-2"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842052650
+      }
+    ]
+  }
+],
+[
+  {
+    "events": [
+      {
+        "event": "click",
+        "properties": {
+          "tag": "INPUT",
+          "id": "password",
+          "classList": "rounded border border-black bg-beige w-full p-1 text-black px-2"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842055844
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "BUTTON",
+          "id": null,
+          "classList": "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 shadow-sm hover:text-accent-foreground h-9 bg-violet-400 border border-gray-600 p-2 transition rounded hover:bg-violet-500 px-4"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842057260
+      }
+    ]
+  }
+],
+[
+  {
+    "events": [
+      {
+        "0": "config",
+        "1": "YOUR_API_KEY"
+      },
+      {
+        "event": "page_view",
+        "properties": {
+          "url": "http://localhost:3000/admin",
+          "title": "Anime Attire"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842067081
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "hover:bg-accent cursor-pointer pb-3 pt-4 px-4 rounded flex justify-between border-b"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842067636
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "hover:bg-accent cursor-pointer pb-3 pt-4 px-4 rounded flex justify-between border-b"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842071911
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "hover:bg-accent cursor-pointer pb-3 pt-4 px-4 rounded flex justify-between border-b"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842075371
+      }
+    ]
+  }
+],
+[
+  {
+    "events": [
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "hover:bg-accent cursor-pointer pb-3 pt-4 px-4 rounded flex justify-between border-b"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842077340
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "p-6"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842078478
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "border p-2 cursor-pointer hover:border-black text-sm bg-primary text-white border-black"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842078983
+      }
+    ]
+  }
+],
+[
+  {
+    "events": [
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "border p-2 cursor-pointer hover:border-black text-sm bg-primary text-white border-black"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842090262
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "border p-2 cursor-pointer hover:border-black text-sm bg-primary text-white border-black"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842091201
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "DIV",
+          "id": null,
+          "classList": "border p-2 cursor-pointer hover:border-black text-sm bg-primary text-white border-black"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842092842
+      }
+    ]
+  }
+],
+[
+  {
+    "events": [
+      {
+        "0": "config",
+        "1": "YOUR_API_KEY"
+      },
+      {
+        "event": "page_view",
+        "properties": {
+          "url": "http://localhost:3000/admin/orders",
+          "title": "Anime Attire"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842117374
+      },
+      {
+        "event": "click",
+        "properties": {
+          "tag": "A",
+          "id": null,
+          "classList": "font-semibold text-gray-700"
+        },
+        "sessionId": "a96d9530-76d0-4f58-8e18-0b946395e7ae",
+        "userId": null,
+        "deviceInfo": "desktop",
+        "timestamp": 1747842120362
+      }
+    ]
+  }
+],

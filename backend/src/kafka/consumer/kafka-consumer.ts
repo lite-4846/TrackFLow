@@ -1,5 +1,7 @@
 import { Kafka } from 'kafkajs';
 import axios from 'axios';
+import fs from 'fs/promises';
+import path from 'path';
 
 type EventData = {
   eventId: string;
@@ -33,6 +35,7 @@ async function startConsumer() {
       const eventData = JSON.parse(
         message.value?.toString() || '',
       ) as EventData;
+      
       batch.push(eventData);
 
       if (!batchTimer) {

@@ -1,19 +1,23 @@
-version: '3'
+version: '3.8'
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_CLIENT_PORT: 2181    # port ZK listens on for clients
+      ZOOKEEPER_TICK_TIME: 2000      # basic time unit in ms for ZK heartbeats
     ports:
       - "2181:2181"
-      
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper
+    restart: unless-stopped
+
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
-    ports:
-      - "9092:9092"  # Exposed to Windows host
+    depends_on:
+      - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -24,28 +28,36 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
 
-      # Other recommended settings
+      # Replication & retention
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_LOG_RETENTION_HOURS: 1
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-
-    depends_on:
-      - zookeeper
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    restart: unless-stopped
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse
     environment:
-      - CLICKHOUSE_DB=default
+      CLICKHOUSE_DB: default           # name of the initial database
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: superman
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - "8123:8123"                     # HTTP interface
+      - "9000:9000"                     # native TCP interface
     volumes:
       - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse-config/users.d/custom-users.xml:/etc/clickhouse-server/users.d/custom-users.xml
     restart: always
+    
 
 volumes:
+  zookeeper-data:
+  kafka-data:
   clickhouse-data:

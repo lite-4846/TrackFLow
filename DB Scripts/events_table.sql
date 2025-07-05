@@ -33,3 +33,4 @@ PARTITION BY toYYYYMM(event_time)
 ORDER BY (tenant_id, user_id, session_id, event_time)
 TTL event_time + INTERVAL 6 MONTH
 SETTINGS index_granularity = 8192;
+
