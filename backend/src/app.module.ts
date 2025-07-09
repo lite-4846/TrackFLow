@@ -3,10 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
-import { TrackingModule } from './modules/tracking/tracking.module';
 import { ProcessingModule } from './modules/processing/processing.module';
 import { UsersModule } from './modules/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { TrackingService } from './modules/tracking/tracking.service';
+import { TrackingModule } from './modules/tracking/tracking.module';
+import { KafkaModule } from './kafka/kafka.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -18,8 +21,10 @@ import { PrismaModule } from './prisma/prisma.module';
     ProcessingModule,
     UsersModule,
     PrismaModule,
+    KafkaModule,
+    HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TrackingService],
 })
 export class AppModule {}

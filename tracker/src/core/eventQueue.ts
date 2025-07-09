@@ -6,9 +6,10 @@ export class EventQueue {
   private apiKey: string;
   private flushTimer: NodeJS.Timeout | null = null;
 
-  constructor(endpoint: string, apiKey: string) {
+  constructor(endpoint: string, apiKey: string, prevQueue?: any[]) {
     this.endpoint = endpoint;
     this.apiKey = apiKey;
+    this.queue = prevQueue || [];
     this.startFlushTimer();
   }
 

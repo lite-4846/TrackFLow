@@ -5,18 +5,19 @@
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf dist",
-    "build:cdn": "tsup src/snippet/loader.ts --format iife --minify --out-dir dist --out-file snippet.js",
-    "build:npm": "tsup src/index.ts --format esm,cjs --out-dir dist",
-    "build": "pnpm clean && pnpm build:cdn && pnpm build:npm",
     "dev": "tsup src/index.ts --watch",
     "lint": "eslint 'src/**/*.ts'",
-    "test": "vitest"
+    "test": "vitest",
+    "build:snippet": "esbuild src/index.ts --bundle --minify --format=iife --global-name=track --outfile=dist/tracker.js",
+    "build:sdk": "tsup src/index.ts --format esm,cjs --out-dir dist",
+    "build": "pnpm build:snippet && pnpm build:sdk"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.13.10",
+    "esbuild": "^0.25.1",
     "tsup": "^8.4.0",
     "typescript": "^5.8.2"
   }
