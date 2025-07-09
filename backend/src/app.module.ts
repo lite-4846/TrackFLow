@@ -9,6 +9,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { TrackingService } from './modules/tracking/tracking.service';
 import { TrackingModule } from './modules/tracking/tracking.module';
 import { KafkaModule } from './kafka/kafka.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { KafkaModule } from './kafka/kafka.module';
     UsersModule,
     PrismaModule,
     KafkaModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService, TrackingService],

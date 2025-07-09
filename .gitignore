@@ -1,0 +1,11 @@
+# All node_modules everywhere
+node_modules/
+
+# Ignore ClickHouse volume
+clickhouse-data/
+
+# Build artifacts
+dist/
+build/
+.next/
+.cache/

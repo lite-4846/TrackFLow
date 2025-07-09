@@ -12,10 +12,14 @@ declare global {
 }
 
 (function () {
-  let API_KEY = 'NOT_FOUND';
+  let apiKey = 'NOT_FOUND';
   let args = window.dataLayer || [];
-  if (args?.length > 1 && args[1][0] === 'config' && args[1][1])
-    API_KEY = args[1][1]; // Store API Key
-  const tracker = Tracker.init(API_KEY, window.dataLayer);
-  window.track = tracker.track;
+  console.log(args);
+  if (args?.length > 0 && args[0][0] === 'config' && args[0][1]) {
+    apiKey = args[0][1]; // Store API Key
+    const tracker = Tracker.init(apiKey, window.dataLayer);
+    window.track = tracker.track;
+  } else {
+    console.error('API_KEY Not found');
+  }
 })();
