@@ -1,0 +1,63 @@
+import { Logger, Module, OnModuleDestroy, Inject } from '@nestjs/common';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { MetricsService } from './metrics.service';
+// Remove MetricsController import since we're using PrometheusModule's endpoint
+// import { MetricsController } from './metrics.controller';
+
+@Module({
+  imports: [
+    PrometheusModule.register({
+      path: '/metrics',
+      defaultMetrics: {
+        enabled: true, // Let PrometheusModule handle default metrics
+      },
+    }),
+  ],
+  // Remove MetricsController from controllers since we're using PrometheusModule's endpoint
+  // controllers: [MetricsController],
+  providers: [
+    {
+      provide: 'METRICS_SERVICE',
+      useFactory: (): MetricsService => {
+        try {
+          return MetricsService.getInstance();
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          Logger.error(`Failed to initialize MetricsService: ${errorMessage}`, 'MetricsModule');
+          throw new Error(`MetricsService initialization failed: ${errorMessage}`);
+        }
+      },
+    },
+    {
+      provide: MetricsService,
+      useExisting: 'METRICS_SERVICE',
+    },
+  ],
+  exports: [MetricsService, PrometheusModule],
+})
+export class MetricsModule implements OnModuleDestroy {
+  private readonly logger = new Logger(MetricsModule.name);
+
+  constructor(
+    @Inject('METRICS_SERVICE')
+    private readonly metricsService: MetricsService
+  ) {}
+
+  onModuleDestroy(): void {
+    try {
+      const service = this.metricsService as { onModuleDestroy?: () => Promise<void> | void };
+      if (service?.onModuleDestroy && typeof service.onModuleDestroy === 'function') {
+        const result = service.onModuleDestroy();
+        if (result instanceof Promise) {
+          result.catch((error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            this.logger.error(`Async error during metrics service cleanup: ${errorMessage}`);
+          });
+        }
+      }
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error during metrics service cleanup: ${errorMessage}`);
+    }
+  }
+}

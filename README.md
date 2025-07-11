@@ -41,6 +41,16 @@ TrackFlow is a distributed event tracking system designed to handle high-through
 - `/plans`: Project plans and roadmaps
 - `/docs`: Technical documentation and architecture decisions
 
+## Service Ports
+
+| Service     | Port  | Description                     |
+|-------------|-------|---------------------------------|
+| Backend     | 8000  | Main API and metrics endpoint   |
+| Tracker.js  | 8080  | Client-side tracking library    |
+| ClickHouse  | 8123  | HTTP interface                 |
+| Kafka       | 9092  | Message broker                 |
+| Zookeeper   | 2181  | Kafka dependency               |
+
 ## Quick Start
 1. **Tracker**: `http-server ./dist --cors -p 8080`
 2. **Backend**: `npm start:dev`

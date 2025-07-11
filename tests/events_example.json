@@ -1,0 +1,73 @@
+[{
+  "eventId": "b384d074c6df302d",
+  "eventType": "click",
+  "tenantId": "YOUR_API_KEY",
+  "properties": {
+      "tag": "LABEL",
+      "id": null
+  },
+  "sessionId": "48a2681f-223b-4d19-9d73-93831d09a7cb",
+  "userId": null,
+  "timestamp": 1752116601281,
+  "pageUrl": "http://localhost:3000/products/67c285a99d1c2153bd07a5f7",
+  "referrer": null,
+  "deviceInfo": {
+      "deviceType": "desktop",
+      "os": "Windows",
+      "browser": "Chrome"
+  }
+},{
+  "eventId": "d62a529ed92c2bb5",
+  "eventType": "click",
+  "tenantId": "YOUR_API_KEY",
+  "properties": {
+      "tag": "IMG",
+      "id": null
+  },
+  "sessionId": "48a2681f-223b-4d19-9d73-93831d09a7cb",
+  "userId": null,
+  "timestamp": 1752116598182,
+  "pageUrl": "http://localhost:3000/products/67c285a99d1c2153bd07a5f7",
+  "referrer": null,
+  "deviceInfo": {
+      "deviceType": "desktop",
+      "os": "Windows",
+      "browser": "Chrome"
+  }
+},{
+  "eventId": "7bf68599aa4ae29a",
+  "eventType": "click",
+  "tenantId": "YOUR_API_KEY",
+  "properties": {
+      "tag": "IMG",
+      "id": null
+  },
+  "sessionId": "48a2681f-223b-4d19-9d73-93831d09a7cb",
+  "userId": null,
+  "timestamp": 1752116593963,
+  "pageUrl": "http://localhost:3000/products/67c285a99d1c2153bd07a5f7",
+  "referrer": null,
+  "deviceInfo": {
+      "deviceType": "desktop",
+      "os": "Windows",
+      "browser": "Chrome"
+  }
+},{
+  "eventId": "155b7fc8730b1344",
+  "eventType": "click",
+  "tenantId": "YOUR_API_KEY",
+  "properties": {
+      "tag": "A",
+      "id": null
+  },
+  "sessionId": "48a2681f-223b-4d19-9d73-93831d09a7cb",
+  "userId": null,
+  "timestamp": 1752116687012,
+  "pageUrl": "http://localhost:3000/products/67c285a99d1c2153bd07a5f7",
+  "referrer": null,
+  "deviceInfo": {
+      "deviceType": "desktop",
+      "os": "Windows",
+      "browser": "Chrome"
+  }
+}]

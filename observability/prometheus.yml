@@ -1,0 +1,78 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Kafka Exporter
+  - job_name: 'kafka-exporter'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Zookeeper JMX Exporter
+  - job_name: 'zookeeper-jmx-exporter'
+    static_configs:
+      - targets: ['zookeeper-jmx-exporter:7070']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # ClickHouse Exporter
+  - job_name: 'clickhouse-exporter'
+    static_configs:
+      - targets: ['clickhouse-exporter:9116']
+        labels:
+          service: 'clickhouse'
+          env: 'production'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 5s
+
+  # Node Exporter (for host metrics)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'host'
+          env: 'production'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 5s
+
+  # Zookeeper JMX Exporter
+  - job_name: 'zookeeper-jmx-exporter'
+    static_configs:
+      - targets: ['zookeeper-jmx-exporter:7070']
+    metrics_path: /metrics
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Backend Application (running locally with pnpm dev)
+  - job_name: 'backend'
+    static_configs:
+      - targets: ['host.docker.internal:8000']
+        labels:
+          env: 'local'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 5s
+
+  # Consumer Application (running locally with pnpm dev)
+  - job_name: 'consumer'
+    static_configs:
+      - targets: ['host.docker.internal:8002']  # For Docker Desktop on Windows
+        labels:
+          env: 'local'
+    metrics_path: /metrics
+    scrape_interval: 15s
+    scrape_timeout: 5s
