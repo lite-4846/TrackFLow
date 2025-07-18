@@ -11,18 +11,25 @@ export class TrackingController {
 
   @Post('events')
   async trackEvents(@Body() eventData: Record<string, unknown>) {
-    const timer = this.metricsService.startEventProcessingTimer('track_events');
+    const startTime = process.hrtime();
     
     try {
       await this.kafkaProducerService.produce('tracking-events', eventData);
-      this.metricsService.recordKafkaMessage('tracking-events');
+      this.metricsService.recordKafkaEvent('tracking-events');
       return { success: true, message: 'Event received' };
     } catch (error: unknown) {
       const errorName = error instanceof Error ? error.name : 'unknown';
       this.metricsService.recordKafkaError('tracking-events', errorName);
       throw error;
     } finally {
-      timer();
+      const [seconds, nanoseconds] = process.hrtime(startTime);
+      const duration = (seconds * 1e9 + nanoseconds) / 1e6; // Convert to ms
+      this.metricsService.recordHttpRequestDuration(
+        'POST',
+        '/tracking/events',
+        200,
+        duration / 1000 // Convert to seconds
+      );
     }
   }
 }

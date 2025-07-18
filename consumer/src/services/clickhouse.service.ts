@@ -20,12 +20,10 @@ export class ClickHouseService {
   constructor() {
     this.config = config.clickhouse;
 
-    // Minimal working configuration for @clickhouse/client v1.11.2
+    // Configuration for @clickhouse/client v1.11.2 using URL
     const clickhouseConfig = {
-      // Connection settings
-      host: this.config.host,
-      username: this.config.username,
-      password: this.config.password,
+      // Connection URL with credentials
+      url: this.config.url,
       database: this.config.database,
 
       // Request timeout in milliseconds
@@ -61,14 +59,13 @@ export class ClickHouseService {
       log: undefined,
     };
 
+    console.log('ClickHouse config:', clickhouseConfig);
+
     this.client = createClient(clickhouseConfig);
 
     // Log connection status
     console.log('Initializing ClickHouse client with config:', {
-      host: this.config.host,
-      database: this.config.database,
-      username: this.config.username,
-      request_timeout: clickhouseConfig.request_timeout,
+      url: this.config.url
     });
 
     // Start batch processing loop
@@ -138,9 +135,13 @@ export class ClickHouseService {
 
   private formatEvent(event: TrackEvent) {
     // Convert timestamp to ClickHouse DateTime64 format
+    console.log('Processing event:', event); 
     const eventTime = new Date(event.timestamp);
-    const eventTimeStr = eventTime.toISOString().replace('T', ' ').replace('Z', '');
-    
+    const eventTimeStr = eventTime
+      .toISOString()
+      .replace('T', ' ')
+      .replace('Z', '');
+
     // Get device info with defaults
     const deviceInfo = event.deviceInfo || {
       deviceType: 'desktop',
@@ -156,31 +157,31 @@ export class ClickHouseService {
       tenant_id: event.tenantId,
       user_id: event.userId,
       session_id: event.sessionId,
-      
+
       // Timestamps
       timestamp: eventTimeStr,
-      
+
       // Page information
       page_url: event.pageUrl || '',
       referrer: event.referrer,
-      
+
       // Device information
       device_type: deviceInfo.deviceType,
       os: deviceInfo.os,
       browser: deviceInfo.browser,
-      
+
       // Event properties as JSON string
-      properties: JSON.stringify(event.properties || {})
+      properties: JSON.stringify(event.properties || {}),
     };
 
     // Handle event-type specific fields
     switch (event.eventType) {
       case 'page_view':
         return baseEvent; // No additional fields needed for page_view
-        
+
       case 'click':
         return baseEvent; // No additional fields needed for click
-        
+
       case 'error': {
         const errorEvent = event as TrackerErrorEvent;
         return {
@@ -189,14 +190,14 @@ export class ClickHouseService {
           properties: JSON.stringify({
             ...event.properties,
             error_type: 'Error',
-            error_stack: errorEvent.properties.stack
-          })
+            error_stack: errorEvent.properties.stack,
+          }),
         };
       }
-      
+
       case 'performance':
         return baseEvent; // No additional fields needed for performance
-        
+
       default:
         return baseEvent;
     }

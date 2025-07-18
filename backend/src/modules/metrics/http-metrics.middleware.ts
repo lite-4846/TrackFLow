@@ -1,39 +1,22 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { MetricsService } from './metrics.service';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
-export class HttpMetricsMiddleware implements NestMiddleware {
-  constructor(private readonly metricsService: MetricsService) {}
+export class HttpMetricsMiddleware implements OnModuleInit {
+  constructor() {}
 
-  use(req: Request, res: Response, next: NextFunction) {
-    const start = process.hrtime();
-    const { method, path: route } = req;
-
-    // Skip metrics endpoint
-    if (route === '/metrics') {
-      return next();
-    }
-
-    res.on('finish', () => {
-      const duration = this.getDurationInSeconds(start);
-      const statusCode = res.statusCode;
-      
-      // Record the request metrics
-      this.metricsService.recordHttpRequest(
-        method,
-        route,
-        statusCode,
-        duration
-      );
-    });
-
-    next();
+  onModuleInit() {
+    // HTTP metrics are handled by @willsoto/nestjs-prometheus when enabled in PrometheusModule.forRoot()
   }
 
-  private getDurationInSeconds(start: [number, number]): number {
-    const NS_PER_SEC = 1e9;
-    const diff = process.hrtime(start);
-    return (diff[0] * NS_PER_SEC + diff[1]) / 1e9; // Convert to seconds
-  }
+  // use(req: FastifyRequest, res: FastifyReply, next: () => void) {
+  //   // Skip metrics endpoint
+  //   if (req.url === '/metrics') {
+  //     return next();
+  //   }
+
+  //   // HTTP metrics are automatically collected by @willsoto/nestjs-prometheus
+  //   // No need for manual collection
+  //   next();
+  // }
+
 }

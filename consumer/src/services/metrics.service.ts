@@ -33,6 +33,7 @@ export class MetricsService {
     this.processingTime = new Histogram({
       name: 'consumer_message_processing_seconds',
       help: 'Time spent processing messages',
+      labelNames: ['status'], // success, error
       buckets: [0.1, 0.5, 1, 2, 5],
       registers: [this.register],
     });
@@ -56,8 +57,8 @@ export class MetricsService {
     return this.register.metrics();
   }
 
-  public incrementMessageCounter(status: 'success' | 'error') {
-    this.messageCounter.inc({ status });
+  public incrementMessageCounter(status: 'success' | 'error', count: number = 1) {
+    this.messageCounter.inc({ status }, count);
   }
 
   public incrementErrorCounter(type: string) {

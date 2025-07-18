@@ -11,9 +11,7 @@ interface Config {
     clientId: string;
   };
   clickhouse: {
-    host: string;
-    username: string;
-    password: string;
+    url: string;
     database: string;
     batchSize: number;
     batchTimeoutMs: number;
@@ -31,9 +29,7 @@ const config: Config = {
     clientId: process.env.KAFKA_CLIENT_ID || 'trackflow-consumer',
   },
   clickhouse: {
-    host: process.env.CLICKHOUSE_HOST || 'http://localhost:8123',
-    username: process.env.CLICKHOUSE_USER || 'default',
-    password: process.env.CLICKHOUSE_PASSWORD || 'superman',
+    url: process.env.CLICKHOUSE_URL || 'http://default:superman@clickhouse:8123',
     database: process.env.CLICKHOUSE_DB || 'trackflow',
     batchSize: parseInt(process.env.BATCH_SIZE || '100', 10),
     batchTimeoutMs: parseInt(process.env.BATCH_TIMEOUT_MS || '5000', 10),

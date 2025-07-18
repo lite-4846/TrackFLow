@@ -1,0 +1,30 @@
+{
+  "name": "@trackflow/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities for Trackflow services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "_moduleAliases": {
+    "@shared": "../shared/dist"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^9.0.0 || ^10.0.0 || ^11.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

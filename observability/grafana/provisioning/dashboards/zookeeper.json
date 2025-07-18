@@ -1,0 +1,491 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Zookeeper Exporter Dashboard",
+    "tags": ["zookeeper", "exporter", "monitoring"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Zookeeper Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "up{job=\"zookeeper-jmx\"}",
+            "legendFormat": "Zookeeper Status"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Active Connections",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_num_alive_connections",
+            "legendFormat": "Active Connections"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 4,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Outstanding Requests",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_outstanding_requests",
+            "legendFormat": "Outstanding Requests"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 8,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "ZNodes Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_znode_count",
+            "legendFormat": "ZNodes"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 12,
+          "y": 0
+        }
+      },
+      {
+        "id": 5,
+        "title": "Ephemeral Nodes",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_ephemerals_count",
+            "legendFormat": "Ephemeral Nodes"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 16,
+          "y": 0
+        }
+      },
+      {
+        "id": 6,
+        "title": "Watch Count",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_watch_count",
+            "legendFormat": "Watches"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 4,
+          "x": 20,
+          "y": 0
+        }
+      },
+      {
+        "id": 7,
+        "title": "Request Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "zk_avg_latency",
+            "legendFormat": "Average Latency"
+          },
+          {
+            "expr": "zk_min_latency",
+            "legendFormat": "Min Latency"
+          },
+          {
+            "expr": "zk_max_latency",
+            "legendFormat": "Max Latency"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "ms"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        }
+      },
+      {
+        "id": 8,
+        "title": "Request Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(zk_packets_received[5m])",
+            "legendFormat": "Packets Received/sec"
+          },
+          {
+            "expr": "rate(zk_packets_sent[5m])",
+            "legendFormat": "Packets Sent/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "reqps"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 4
+        }
+      },
+      {
+        "id": 9,
+        "title": "Zookeeper Server State",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_server_state",
+            "legendFormat": "Server State"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "green",
+                  "value": 3
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "UNKNOWN"
+                  },
+                  "1": {
+                    "text": "FOLLOWER"
+                  },
+                  "2": {
+                    "text": "OBSERVER"
+                  },
+                  "3": {
+                    "text": "LEADER"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 12
+        }
+      },
+      {
+        "id": 10,
+        "title": "Data Size",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "zk_approximate_data_size",
+            "legendFormat": "Approximate Data Size"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "bytes"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 6,
+          "y": 12
+        }
+      },
+      {
+        "id": 11,
+        "title": "Open File Descriptors",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "zk_open_file_descriptor_count",
+            "legendFormat": "Open FDs"
+          },
+          {
+            "expr": "zk_max_file_descriptor_count",
+            "legendFormat": "Max FDs"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 6,
+          "x": 18,
+          "y": 12
+        }
+      },
+      {
+        "id": 12,
+        "title": "Zookeeper Followers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_followers",
+            "legendFormat": "Followers"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        }
+      },
+      {
+        "id": 13,
+        "title": "Synced Followers",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_synced_followers",
+            "legendFormat": "Synced Followers"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        }
+      },
+      {
+        "id": 14,
+        "title": "Pending Syncs",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_pending_syncs",
+            "legendFormat": "Pending Syncs"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "unit": "short"
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 16
+        }
+      },
+      {
+        "id": 15,
+        "title": "Zookeeper Up",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "zk_up",
+            "legendFormat": "ZK Up"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "green",
+                  "value": 1
+                }
+              ]
+            },
+            "mappings": [
+              {
+                "options": {
+                  "0": {
+                    "text": "DOWN"
+                  },
+                  "1": {
+                    "text": "UP"
+                  }
+                },
+                "type": "value"
+              }
+            ]
+          }
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 16
+        }
+      }
+    ],
+    "time": {
+      "from": "now-30m",
+      "to": "now"
+    },
+    "refresh": "10s",
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
+  }
+}

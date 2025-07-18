@@ -1,0 +1,26 @@
+# REST Client for TrackFlow Consumer
+# Install REST Client extension in VS Code to use this file
+
+# Health Check
+GET http://localhost:8002/health
+
+# Prometheus Metrics
+GET http://localhost:8002/metrics
+
+# Test Kafka Message (requires kafkacat or similar tool)
+# Uncomment and modify as needed
+# POST http://localhost:8002/send-test-message
+# Content-Type: application/json
+
+# {
+#   "event": "page_view",
+#   "timestamp": "2025-07-12T06:30:00Z",
+#   "properties": {
+#     "url": "https://example.com",
+#     "referrer": "https://google.com",
+#     "userAgent": "Mozilla/5.0..."
+#   }
+# }
+
+# To test with kafkacat (run in terminal):
+# echo '{"event":"test","timestamp":"2025-07-12T06:30:00Z"}' | kafkacat -b localhost:9092 -t trackflow-events -P
