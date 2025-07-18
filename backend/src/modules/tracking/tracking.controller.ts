@@ -19,7 +19,7 @@ export class TrackingController {
       return { success: true, message: 'Event received' };
     } catch (error: unknown) {
       const errorName = error instanceof Error ? error.name : 'unknown';
-      this.metricsService.recordKafkaError('tracking-events', errorName);
+      this.metricsService.recordEventAborted(errorName, 'kafka_event', { topic: 'tracking-events' });
       throw error;
     } finally {
       const [seconds, nanoseconds] = process.hrtime(startTime);

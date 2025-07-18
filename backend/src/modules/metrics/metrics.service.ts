@@ -17,15 +17,16 @@ export class MetricsService implements OnModuleDestroy {
   private metricsIntervals: NodeJS.Timeout[] = [];
   
   // HTTP Metrics
-  private httpRequestCounter: Counter<string>;
   private httpRequestDuration: Histogram<string>;
-  private httpErrorsCounter: Counter<string>;
   
   // Kafka Metrics
-  private kafkaEventCounter: Counter<string>;
-  private kafkaErrorCounter: Counter<string>;
-  private kafkaQueueSizeGauge: Gauge<string>;
   private kafkaProcessingTimeHistogram: Histogram<string>;
+  
+  // Event Tracking Metrics (Consolidated)
+  private eventsReceivedCounter: Counter<string>;  // Replaces http_requests_total
+  private eventsProducedCounter: Counter<string>;  // Replaces kafka_events_total
+  private eventsPendingGauge: Gauge<string>;
+  private eventsAbortedCounter: Counter<string>;   // Replaces kafka_errors_total
   
   // DB Metrics
   private dbQueryDurationHistogram: Histogram<string>;
@@ -63,18 +64,11 @@ export class MetricsService implements OnModuleDestroy {
     this.initializeKafkaMetrics();
     this.initializeDbMetrics();
     this.initializeSystemMetrics();
+    this.initializeEventTrackingMetrics();
   }
 
   private initializeHttpMetrics(): void {
-    // HTTP Request Counter
-    this.httpRequestCounter = new Counter({
-      name: 'http_requests_total',
-      help: 'Total number of HTTP requests',
-      labelNames: ['method', 'route', 'status_code'],
-      registers: [this.registry],
-    });
-
-    // HTTP Request Duration Histogram
+    // HTTP Request Duration Histogram (kept for performance monitoring)
     this.httpRequestDuration = new Histogram({
       name: 'http_request_duration_seconds',
       help: 'Duration of HTTP requests in seconds',
@@ -82,40 +76,9 @@ export class MetricsService implements OnModuleDestroy {
       buckets: [0.1, 0.3, 0.5, 1, 2, 5],
       registers: [this.registry],
     });
-
-    // HTTP Errors Counter
-    this.httpErrorsCounter = new Counter({
-      name: 'http_errors_total',
-      help: 'Total number of HTTP errors',
-      labelNames: ['method', 'route', 'status_code'],
-      registers: [this.registry],
-    });
   }
 
   private initializeKafkaMetrics(): void {
-    // Kafka Event Counter
-    this.kafkaEventCounter = new Counter({
-      name: 'kafka_events_total',
-      help: 'Total number of Kafka events processed',
-      labelNames: ['topic'],
-      registers: [this.registry],
-    });
-
-    // Kafka Error Counter
-    this.kafkaErrorCounter = new Counter({
-      name: 'kafka_errors_total',
-      help: 'Total number of Kafka processing errors',
-      labelNames: ['topic', 'error_type'],
-      registers: [this.registry],
-    });
-
-    // Kafka Queue Size Gauge
-    this.kafkaQueueSizeGauge = new Gauge({
-      name: 'kafka_queue_size',
-      help: 'Current size of the Kafka processing queue',
-      labelNames: ['topic'],
-      registers: [this.registry],
-    });
 
     // Kafka Processing Time Histogram
     this.kafkaProcessingTimeHistogram = new Histogram({
@@ -157,18 +120,16 @@ export class MetricsService implements OnModuleDestroy {
 
   // HTTP Metrics Methods
   public recordHttpRequest(method: string, route: string, statusCode: number): void {
-    this.httpRequestCounter.inc({
-      method: method.toLowerCase(),
-      route,
-      status_code: statusCode.toString(),
-    });
-
+    // Record all HTTP requests as received events
+    this.recordEventReceived('http_request');
+    
+    // Record failed requests as aborted events
     if (statusCode >= 400) {
-      this.httpErrorsCounter.inc({
-        method: method.toLowerCase(),
-        route,
-        status_code: statusCode.toString(),
-      });
+      this.recordEventAborted(
+        `http_${statusCode}`, 
+        'http_request',
+        { method: method.toLowerCase(), route }
+      );
     }
   }
 
@@ -187,26 +148,85 @@ export class MetricsService implements OnModuleDestroy {
       .observe(duration);
   }
 
-  // Kafka Metrics Methods
+  // Kafka Metrics Methods - Updated to use event tracking metrics
   public recordKafkaEvent(topic: string): void {
-    this.kafkaEventCounter.inc({ topic });
+    this.recordEventProduced(topic);
   }
 
-  // Alias for backward compatibility
+  // Event Tracking Methods
+  private initializeEventTrackingMetrics(): void {
+    // Events Received Counter (replaces http_requests_total)
+    this.eventsReceivedCounter = new Counter({
+      name: 'events_received_total',
+      help: 'Total number of events received by the system',
+      labelNames: ['type', 'method', 'route'],  // Added HTTP-specific labels
+      registers: [this.registry],
+    });
+
+    // Events Produced Counter (replaces kafka_events_total)
+    this.eventsProducedCounter = new Counter({
+      name: 'events_produced_total',
+      help: 'Total number of events successfully produced to Kafka',
+      labelNames: ['topic'],
+      registers: [this.registry],
+    });
+
+    // Events Pending Gauge
+    this.eventsPendingGauge = new Gauge({
+      name: 'events_pending',
+      help: 'Current number of events pending processing',
+      labelNames: ['type'],
+      registers: [this.registry],
+    });
+
+    // Events Aborted Counter (replaces kafka_errors_total and http_errors_total)
+    this.eventsAbortedCounter = new Counter({
+      name: 'events_aborted_total',
+      help: 'Total number of events aborted during processing',
+      labelNames: ['type', 'reason', 'method', 'route'],  // Added HTTP-specific labels
+      registers: [this.registry],
+    });
+  }
+
+  // Public methods to update event metrics
+  public recordEventReceived(
+    eventType: string = 'default', 
+    labels: Record<string, string> = {}
+  ): void {
+    this.eventsReceivedCounter.inc({ 
+      type: eventType,
+      method: labels.method || '',
+      route: labels.route || ''
+    });
+  }
+
+  public recordEventProduced(topic: string): void {
+    this.eventsProducedCounter.inc({ topic });
+  }
+
+  public updatePendingEvents(count: number, eventType: string = 'default'): void {
+    this.eventsPendingGauge.set({ type: eventType }, count);
+  }
+
+  public recordEventAborted(
+    reason: string, 
+    eventType: string = 'default',
+    labels: Record<string, string> = {}
+  ): void {
+    this.eventsAbortedCounter.inc({ 
+      type: eventType, 
+      reason,
+      method: labels.method || '',
+      route: labels.route || ''
+    });
+  }
+
   public trackKafkaEvent(topic: string, status: 'success' | 'failed'): void {
     if (status === 'success') {
-      this.recordKafkaEvent(topic);
+      this.recordEventProduced(topic);
     } else {
-      this.recordKafkaError(topic, 'processing_error');
+      this.recordEventAborted('kafka_error', 'kafka_event', { topic });
     }
-  }
-
-  public recordKafkaError(topic: string, errorType: string): void {
-    this.kafkaErrorCounter.inc({ topic, error_type: errorType });
-  }
-
-  public updateKafkaQueueSize(topic: string, size: number): void {
-    this.kafkaQueueSizeGauge.set({ topic }, size);
   }
 
   public recordKafkaProcessingTime<T>(

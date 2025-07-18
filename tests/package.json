@@ -7,7 +7,11 @@
     "generate-events": "ts-node generate-test-events.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["tracking", "analytics", "test"],
+  "keywords": [
+    "tracking",
+    "analytics",
+    "test"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -15,11 +19,11 @@
     "@types/uuid": "^9.0.0",
     "axios": "^1.6.0",
     "dotenv": "^16.0.0",
-    "ts-node": "^10.9.0",
     "typescript": "^5.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0"
+    "@types/axios": "^0.14.0",
+    "ts-node": "^10.9.2"
   }
 }

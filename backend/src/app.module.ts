@@ -6,7 +6,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ProcessingModule } from './modules/processing/processing.module';
 // import { UsersModule } from './modules/users/users.module';
 // import { PrismaModule } from './modules/prisma/prisma.module';
-import { TrackingService } from './modules/tracking/tracking.service';
 import { TrackingModule } from './modules/tracking/tracking.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
 import { HealthModule } from './modules/health/health.module';
@@ -17,6 +16,7 @@ import { HttpMetricsMiddleware } from './common/middleware/http-metrics.middlewa
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Makes env variables available throughout the app
+      envFilePath: ['.env.local', '.env']
     }),
     MetricsModule,
     // AuthModule,
