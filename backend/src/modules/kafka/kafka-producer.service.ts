@@ -1,0 +1,355 @@
+import { Injectable, OnModuleInit, Logger, OnModuleDestroy, Inject } from '@nestjs/common';
+import { Kafka, Producer, logLevel, KafkaConfig, logCreator } from 'kafkajs';
+import { KafkaUtils, TRACKING_EVENTS_TOPIC } from '@shared/kafka/kafka-utils';
+import { MetricsService } from '../metrics/metrics.service';
+
+// Default retry configuration
+const DEFAULT_RETRY_CONFIG = {
+  maxRetries: 10,
+  initialDelay: 1000,
+  maxDelay: 30000,
+  factor: 2,
+};
+
+@Injectable()
+export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(KafkaProducerService.name);
+  private kafka: Kafka;
+  private producer: Producer;
+  private isConnected = false;
+  private isInitializing = false;
+  private initializationPromise: Promise<void> | null = null;
+  private readonly kafkaConfig: KafkaConfig;
+  private readonly retryConfig: typeof DEFAULT_RETRY_CONFIG;
+  private isShuttingDown = false;
+  constructor(
+    private readonly metrics: MetricsService
+  ) {
+    const brokers = process.env.KAFKA_BROKERS || 'localhost:9092';
+    const brokerList = brokers.split(',').map(b => b.trim());
+    
+    // Configure retry settings from environment or use defaults
+    this.retryConfig = {
+      ...DEFAULT_RETRY_CONFIG,
+      maxRetries: parseInt(process.env.KAFKA_RETRY_ATTEMPTS || String(DEFAULT_RETRY_CONFIG.maxRetries), 10),
+      initialDelay: parseInt(process.env.KAFKA_RETRY_INITIAL_DELAY || String(DEFAULT_RETRY_CONFIG.initialDelay), 10),
+      maxDelay: parseInt(process.env.KAFKA_RETRY_MAX_DELAY || String(DEFAULT_RETRY_CONFIG.maxDelay), 10),
+    };
+    
+    this.kafkaConfig = {
+      clientId: 'trackflow-backend',
+      brokers: brokerList,
+      logLevel: logLevel.INFO,
+      retry: {
+        maxRetryTime: this.retryConfig.maxDelay,
+        retries: this.retryConfig.maxRetries,
+      },
+    };
+    
+    this.kafka = new Kafka({
+      ...this.kafkaConfig,
+      logCreator: () => (entry) => {
+        const { level, log, ...rest } = entry;
+        this.logger.log(`[Kafka] ${JSON.stringify({ level, ...rest })}`);
+        return () => {}; // Return empty function as required by the type
+      },
+    });
+    
+    this.producer = this.kafka.producer();
+    this.setupEventHandlers();
+    
+    this.logger.log(`Initialized Kafka producer with brokers: ${brokerList.join(', ')}`);
+    this.logger.debug(`Retry configuration: ${JSON.stringify(this.retryConfig)}`);
+  }
+
+  /**
+   * Retry helper with exponential backoff
+   */
+  private async withRetry<T>(
+    operation: () => Promise<T>,
+    operationName: string,
+    overrideConfig: Partial<typeof DEFAULT_RETRY_CONFIG> = {}
+  ): Promise<T> {
+    const config = { ...this.retryConfig, ...overrideConfig };
+    let lastError: Error | null = null;
+    let attempt = 0;
+
+    while (attempt <= config.maxRetries) {
+      try {
+        if (attempt > 0) {
+          const delay = Math.min(
+            config.initialDelay * Math.pow(config.factor, attempt - 1),
+            config.maxDelay
+          );
+          
+          this.logger.debug(
+            `Retry ${attempt}/${config.maxRetries} for ${operationName} in ${delay}ms...`
+          );
+          
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        return await operation();
+      } catch (error) {
+        lastError = error as Error;
+        attempt++;
+
+        if (attempt > config.maxRetries) {
+          this.logger.error(
+            `Max retries (${config.maxRetries}) reached for ${operationName}: ${error.message}`
+          );
+          break;
+        }
+
+        this.logger.warn(
+          `Attempt ${attempt}/${config.maxRetries} failed for ${operationName}: ${error.message}`
+        );
+      }
+    }
+
+    throw lastError || new Error(`Unknown error during ${operationName}`);
+  }
+
+  private setupEventHandlers() {
+    this.producer.on('producer.connect', () => {
+      this.isConnected = true;
+      this.logger.log('Kafka Producer connected successfully');
+    });
+
+    this.producer.on('producer.disconnect', () => {
+      this.isConnected = false;
+      const error = new Error('Kafka producer disconnected');
+      this.logger.warn('Kafka Producer disconnected');
+      this.metrics.trackKafkaEvent('unknown', 'failed');
+    });
+
+    this.producer.on('producer.network.request_timeout', (payload) => {
+      const error = new Error(`Kafka request timeout: ${JSON.stringify(payload)}`);
+      this.metrics.trackKafkaEvent('unknown', 'failed');
+      this.logger.error(error.message);
+    });
+  }
+
+  async onModuleInit() {
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    if (this.isInitializing) {
+      this.logger.debug('Kafka initialization already in progress');
+      return;
+    }
+
+    this.isInitializing = true;
+    this.initializationPromise = this.initializeKafka();
+    return this.initializationPromise;
+  }
+
+  private async initializeKafka() {
+    try {
+      await this.withRetry(
+        async () => {
+          const isBrokerAvailable = await KafkaUtils.validateBrokerConnection(this.kafkaConfig);
+          if (!isBrokerAvailable) {
+            throw new Error('Failed to validate Kafka broker connection');
+          }
+          return true;
+        },
+        'broker validation'
+      );
+
+      await this.withRetry(() => this.ensureTopics(), 'topic validation');
+      await this.withRetry(() => this.producer.connect(), 'producer connection');
+
+      this.logger.log('Successfully connected to Kafka');
+    } catch (error) {
+      this.logger.error('Failed to initialize Kafka producer after all retries', error);
+      throw error;
+    } finally {
+      this.isInitializing = false;
+    }
+  }
+  
+  /**
+   * Ensures all required topics exist with correct configuration
+   */
+  private async ensureTopics() {
+    try {
+      this.logger.log('Validating Kafka topics...');
+      
+      // Ensure tracking-events topic exists with correct configuration
+      await KafkaUtils.ensureTopicExists(this.kafkaConfig, {
+        ...TRACKING_EVENTS_TOPIC,
+        topic: process.env.KAFKA_TOPIC || TRACKING_EVENTS_TOPIC.topic,
+      });
+      
+      this.logger.log('All Kafka topics validated successfully');
+    } catch (error) {
+      this.logger.error('Error validating Kafka topics', error);
+      throw error;
+    }
+  }
+
+  async produce(topic: string, message: any) {
+    // Record the Kafka event
+    this.metrics.recordKafkaEvent(topic);
+    
+    if (!this.isConnected) {
+      this.logger.warn('Attempting to produce message while not connected to Kafka. Initializing connection...');
+      try {
+        await this.initializeKafka();
+      } catch (error) {
+        const errorName = error instanceof Error ? error.name : 'unknown';
+        this.metrics.recordKafkaError(topic, errorName);
+        this.logger.error('Failed to initialize Kafka connection', error);
+        throw error;
+      }
+    }
+
+    try {
+      const messages = Array.isArray(message) ? message : [message];
+      const batchSize = messages.length;
+      
+      // Record the start time for processing duration
+      const startTime = process.hrtime();
+      
+      // Record processing time and execute the operation
+      const sendResult = await this.metrics.recordKafkaProcessingTime(
+        topic,
+        async () => {
+          return this.withRetry(
+            async () => {
+              return this.producer.send({
+                topic,
+                messages: messages.map(msg => ({
+                  value: JSON.stringify(msg)
+                })),
+              });
+            },
+            `message production to topic ${topic}`
+          );
+        }
+      );
+      
+      // Log batch processing every 1000 messages
+      try {
+        const metrics = await this.metrics.getMetrics();
+        const kafkaMetrics = metrics && typeof metrics === 'object' && 'kafka' in metrics 
+          ? (metrics as { kafka: { eventsProcessed: number } }).kafka 
+          : null;
+          
+        if (kafkaMetrics && kafkaMetrics.eventsProcessed % 1000 === 0) {
+          this.logger.log({
+            message: 'Batch processed',
+            topic,
+            batchSize,
+            metrics,
+            timestamp: new Date().toISOString(),
+          });
+        }
+      } catch (error) {
+        this.logger.warn('Failed to log metrics', { error: (error as Error).message });
+      }
+      
+      return sendResult;
+    } catch (error) {
+      this.metrics.trackKafkaEvent(topic, 'failed');
+      this.logger.error('Failed to produce message to Kafka', {
+        topic,
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
+    }
+  }
+
+  async onModuleDestroy() {
+    this.isShuttingDown = true;
+    try {
+      if (this.producer) {
+        await this.producer.disconnect();
+        this.logger.log('Kafka producer disconnected');
+      }
+    } catch (error) {
+      this.logger.error('Error disconnecting Kafka producer', error);
+    } finally {
+      this.isConnected = false;
+      this.initializationPromise = null;
+      this.isInitializing = false;
+    }
+  }
+
+  async checkConnection(): Promise<boolean> {
+    if (this.isShuttingDown) {
+      return false;
+    }
+
+    try {
+      // Check if the broker is reachable with a shorter timeout for health checks
+      const isBrokerAvailable = await this.withRetry(
+        async () => {
+          const result = await KafkaUtils.validateBrokerConnection({
+            ...this.kafkaConfig,
+            requestTimeout: 5000, // Shorter timeout for health checks
+          });
+          if (!result) {
+            throw new Error('Broker validation returned false');
+          }
+          return true;
+        },
+        'health check broker validation',
+        {
+          maxRetries: 2,
+          initialDelay: 500,
+          maxDelay: 1000,
+        }
+      );
+
+      if (!isBrokerAvailable) {
+        this.logger.warn('Kafka broker is not reachable');
+        return false;
+      }
+      
+      // Check if the producer is connected
+      if (!this.isConnected) {
+        await this.producer.connect();
+      }
+      
+      // Verify we can produce to the topic
+      await this.withRetry(
+        () => this.producer.send({
+          topic: process.env.KAFKA_TOPIC || TRACKING_EVENTS_TOPIC.topic,
+          messages: [{ 
+            value: JSON.stringify({ 
+              type: 'healthcheck', 
+              timestamp: new Date().toISOString() 
+            }) 
+          }],
+        }),
+        'health check message production',
+        {
+          maxRetries: 2,
+          initialDelay: 500,
+          maxDelay: 1000,
+        }
+      );
+      
+      // Log connection status periodically
+      if (Date.now() - (this['lastStatusLog'] || 0) > 30000) { // Log every 30 seconds
+        this.logger.log({
+          message: 'Kafka connection status',
+          status: 'healthy',
+          ...this.metrics.getMetrics(),
+        });
+        this['lastStatusLog'] = Date.now();
+      }
+      
+      return true;
+    } catch (error) {
+      this.metrics.recordKafkaError(TRACKING_EVENTS_TOPIC.topic, 'failed');
+      this.logger.warn('Kafka connection check failed', error);
+      return false;
+    }
+  }
+
+}

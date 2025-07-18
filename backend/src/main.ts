@@ -1,3 +1,9 @@
+// This must be at the very top of the file, before any other imports
+if (process.env.NODE_ENV === 'production') {
+  require('module-alias/register');
+  require('tsconfig-paths/register');
+}
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
@@ -11,13 +17,16 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   app.enableCors({
-    origin: 'http://localhost:3000', // Allow only Next.js frontend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
-    credentials: true, // Allow cookies if needed
+    origin: ['*'],
+    methods: ['POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   });
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  const port = process.env.PORT || 8000;
+  const host = '0.0.0.0';
+  await app.listen(port, host);
+  console.log(`🚀 Server running on http://${host}:${port}`);
 }
 bootstrap().catch((err) => console.warn(err));

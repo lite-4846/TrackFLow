@@ -21,11 +21,9 @@ export class Tracker {
   }
 
   generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = Math.random() * 16;
-      const v = c === 'x' ? r : (r % 4) + 8;
-      return v.toString(16);
-    });
+    return [...Array(16)]
+      .map(() => Math.floor(Math.random() * 16).toString(16))
+      .join('');
   }
 
   /**
@@ -57,6 +55,7 @@ export class Tracker {
     const eventData = {
       eventId: this.generateUUID(),
       eventType: eventName,
+      tenantId: this.apiKey,
 
       properties,
 

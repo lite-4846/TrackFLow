@@ -1,51 +1,283 @@
-version: '3'
+version: '3.8'
+
+networks:
+  trackflow:
+    driver: bridge
+
 services:
+  # Backend Service
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: backend
+    restart: on-failure:5 # Restart up to 5 times on failure
+    ports:
+      - '8000:8000'
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_CLIENT_ID=trackflow-backend
+      - KAFKA_GROUP_ID=trackflow-group
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_DATABASE=trackflow
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=superman
+      # Kafka connection settings
+      - KAFKA_CONNECTION_TIMEOUT=30000
+      - KAFKA_RETRY_ATTEMPTS=10
+      - KAFKA_RETRY_INITIAL_DELAY=1000
+      - KAFKA_RETRY_MAX_DELAY=30000
+      - KAFKA_RETRY_FACTOR=2
+      - KAFKA_RETRY_TIMEOUT=60000
+      - KAFKA_HEALTH_CHECK_TIMEOUT=5000
+      - KAFKA_HEALTH_CHECK_MAX_RETRIES=2
+    depends_on:
+      kafka:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - trackflow
+
+  # Consumer Service
+  consumer:
+    build:
+      context: ./consumer
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    container_name: consumer
+    restart: unless-stopped
+    ports:
+      - '8002:8002'
+    environment:
+      - NODE_ENV=production
+      - PORT=8002
+      - KAFKA_BROKERS=kafka:9092
+      - KAFKA_GROUP_ID=trackflow-group
+      - KAFKA_TOPIC=tracking-events
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_DATABASE=trackflow
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=superman
+      - BATCH_SIZE=100
+      - BATCH_TIMEOUT_MS=5000
+      - LOG_LEVEL=info
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8002/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          memory: 512M
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+    depends_on:
+      kafka:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    networks:
+      - trackflow
+
+  # Kafka and Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 10
+      ZOOKEEPER_SYNC_LIMIT: 5
     ports:
-      - "2181:2181"
-      
+      - '2181:2181'
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'echo srvr | nc localhost 2181 | grep Mode']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - trackflow
+
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     container_name: kafka
-    ports:
-      - "9092:9092"  # Exposed to Windows host
+    depends_on:
+      zookeeper:
+        condition: service_healthy
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-
-      # Listener setup
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9093,OUTSIDE://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-
-      # Other recommended settings
+      # Listen on all interfaces (internal Docker network only)
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      # Advertise the container's hostname and port to clients
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_LOG_RETENTION_HOURS: 1
+      KAFKA_LOG_RETENTION_HOURS: 24
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_HEAP_OPTS: '-Xmx1G -Xms1G'
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 1
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CLUSTER_ID: my-fixed-id-123
+      # Additional reliability settings
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: 'false'
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'kafka-topics --bootstrap-server localhost:9092 --list']
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    networks:
+      - trackflow
 
-    depends_on:
-      - zookeeper
-
+  # ClickHouse
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    image: clickhouse/clickhouse-server:23.3
     container_name: clickhouse
     environment:
-      - CLICKHOUSE_DB=default
+      CLICKHOUSE_DB: trackflow
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: superman
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - '8123:8123'
+      - '9000:9000'
+      - '9126:9126'
+    networks:
+      - trackflow
     volumes:
       - clickhouse-data:/var/lib/clickhouse
-    restart: always
+      - ./clickhouse-config/config/config.xml:/etc/clickhouse-server/config.xml
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8123/ping']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Node Exporter
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    ports:
+      - '9100:9100'
+    networks:
+      - trackflow
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+    depends_on:
+      - kafka
+      - zookeeper
+      - clickhouse
+      - backend
+    networks:
+      - trackflow
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ADMIN_USER=admin
+    depends_on:
+      - prometheus
+    networks:
+      - trackflow
+
+  # Kafka Exporter
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    container_name: kafka-exporter
+    command:
+      - '--kafka.server=kafka:9092'
+      - '--web.listen-address=:9308'
+    ports:
+      - '9308:9308'
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - trackflow
+
+  # Zookeeper Navigator (Web UI)
+  zoonavigator:
+    image: elkozmon/zoonavigator:latest
+    container_name: zoonavigator
+    ports:
+      - '9001:9000'
+    environment:
+      - HTTP_PORT=9000
+    depends_on:
+      - zookeeper
+    networks:
+      - trackflow
 
 volumes:
+  zookeeper-data:
+  zookeeper-log:
+  kafka-data:
   clickhouse-data:
+  prometheus-data:
+  grafana-data:
+    driver: local

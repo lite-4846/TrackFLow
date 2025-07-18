@@ -1,0 +1,36 @@
+# Ignore everything first
+**
+
+# Allow backend, consumer, and shared folders
+!backend/**
+!consumer/**
+!shared/**
+!pnpm-workspace.yaml
+!package.json
+!pnpm-lock.yaml
+!clickhouse-config/**
+
+# Still ignore node_modules and build artifacts
+backend/node_modules
+consumer/node_modules
+shared/node_modules
+
+**/dist
+**/build
+**/.next
+**/.turbo
+**/.cache
+
+# Ignore env and logs
+**/.env
+**/.env.*
+**/*.log
+**/*.tsbuildinfo
+
+# Python leftovers (optional if not using Python)
+__pycache__/
+*.py[cod]
+*.so
+*.pyo
+*.pyd
+*.egg-info

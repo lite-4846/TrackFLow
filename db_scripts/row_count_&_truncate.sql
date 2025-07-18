@@ -1,0 +1,3 @@
+SELECT COUNT(*) FROM events;
+
+TRUNCATE TABLE events;

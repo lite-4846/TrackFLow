@@ -1,0 +1,74 @@
+startDelaySeconds: 0
+hostPort: "zookeeper:5555"  # Fixed: Direct hostname instead of env vars
+username: ""
+password: ""
+jmxUrl: "service:jmx:rmi:///jndi/rmi://zookeeper:5555/jmxrmi"
+ssl: false
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+rules:
+  # Zookeeper Server Metrics
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=Synced(\\w+)><>(\\w+)"
+    name: "zookeeper_$4"
+    type: GAUGE
+    labels:
+      replicaId: "$2"
+  
+  # Zookeeper Request Processor Metrics
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=PrepRequestProcessor><>(\\w+)"
+    name: "zookeeper_$3"
+    type: COUNTER
+    labels:
+      replicaId: "$2"
+  
+  # Zookeeper Network Metrics
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=ObserverRequestThrottler><>(\\w+)"
+    name: "zookeeper_$3"
+    type: GAUGE
+    labels:
+      replicaId: "$2"
+  
+  # Zookeeper Quorum Metrics
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+), name2=QuorumPeer, name3=QuorumMetrics><>(\\w+)"
+    name: "zookeeper_quorum_$4"
+    type: GAUGE
+    labels:
+      replicaId: "$2"
+  
+  # Simplified Zookeeper patterns for standalone mode
+  - pattern: "org.apache.ZooKeeperService<name0=StandaloneServer_port(\\d+)><>(\\w+)"
+    name: "zookeeper_$2"
+    type: GAUGE
+    labels:
+      port: "$1"
+  
+  # JVM Metrics
+  - pattern: "java.lang<type=GarbageCollector, name=([^>]+)><>CollectionCount"
+    name: "jvm_gc_$1_collections_total"
+    type: COUNTER
+  
+  - pattern: "java.lang<type=GarbageCollector, name=([^>]+)><>CollectionTime"
+    name: "jvm_gc_$1_time_seconds"
+    type: COUNTER
+    valueFactor: 0.001
+  
+  - pattern: "java.lang<type=Memory><HeapMemoryUsage><>committed"
+    name: "jvm_memory_heap_committed_bytes"
+    type: GAUGE
+  
+  - pattern: "java.lang<type=Memory><HeapMemoryUsage><>used"
+    name: "jvm_memory_heap_used_bytes"
+    type: GAUGE
+  
+  - pattern: "java.lang<type=Memory><HeapMemoryUsage><>max"
+    name: "jvm_memory_heap_max_bytes"
+    type: GAUGE
+  
+  - pattern: "java.lang<type=Threading><>ThreadCount"
+    name: "jvm_threads_current"
+    type: GAUGE
+  
+  - pattern: "java.lang<type=Threading><>DaemonThreadCount"
+    name: "jvm_threads_daemon"
+    type: GAUGE

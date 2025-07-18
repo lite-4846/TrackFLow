@@ -1,0 +1,29 @@
+---
+startDelaySeconds: 0
+username: 
+password: 
+ssl: false
+lowercaseOutputName: false
+lowercaseOutputLabelNames: false
+rules:
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+)><>(\w+)"
+    name: "zookeeper_$2"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+)><>(\w+)"
+    name: "zookeeper_$3"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+)><>(\w+)"
+    name: "zookeeper_$3_$4"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+), name3=(\w+)><>(\w+)"
+    name: "zookeeper_$3_$4_$5"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+), name3=(\w+), name4=(\w+)><>(\w+)"
+    name: "zookeeper_$3_$4_$5_$6"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+), name3=(\w+), name4=(\w+), name5=(\w+)><>(\w+)"
+    name: "zookeeper_$3_$4_$5_$6_$7"
+    type: GAUGE
+  - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\d+), name1=replica.(\d+), name2=(\w+), name3=(\w+), name4=(\w+), name5=(\w+), name6=(\w+)><>(\w+)"
+    name: "zookeeper_$3_$4_$5_$6_$7_$8"
+    type: GAUGE
