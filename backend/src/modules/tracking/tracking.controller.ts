@@ -1,21 +1,19 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { KafkaProducerService } from 'src/kafka/kafka-producer.service';
+import { KafkaProducerService } from '../kafka/kafka-producer.service';
 
 @Controller('tracking')
 export class TrackingController {
-  constructor(private readonly kafkaProducerService: KafkaProducerService) {}
+  constructor(
+    private readonly kafkaProducerService: KafkaProducerService,
+  ) {}
 
   @Post('events')
-  trackEvents(@Body() eventData: any) {
-    console.log('Received events from frontend', eventData);
-    this.kafkaProducerService
-      .produce('tracking-events', eventData)
-      .then((res) => {
-        console.log('Produced event to Kafka', res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return { success: true, message: 'Event received' };
+  async trackEvents(@Body() eventData: Record<string, unknown>) {
+    try {
+      await this.kafkaProducerService.produce('tracking-events', eventData);
+      return { success: true, message: 'Event received' };
+    } catch (error: unknown) {
+      throw error;
+    }
   }
 }

@@ -40,6 +40,32 @@ EVENT_COUNT=50 pnpm generate-events
 API_BASE_URL=http://your-backend-url pnpm generate-events
 ```
 
+### Load Testing
+
+Run a high-volume load test to verify system performance:
+
+```bash
+# Basic load test (10000 events, batch size 20, concurrency 50)
+npx ts-node load-test.ts 10000 20 50
+
+# Parameters:
+# 1. Total number of events (e.g., 10000)
+# 2. Batch size (e.g., 20 events per batch)
+# 3. Concurrency level (e.g., 50 concurrent batches)
+
+# Example output will show:
+# - Progress percentage
+# - Number of successful/failed events
+# - Total time taken
+# - Throughput (events/second)
+```
+
+**Recommended Load Test Command:**
+```bash
+npx ts-node load-test.ts 10000 20 50
+```
+This command will send 10,000 events in batches of 20, with 50 concurrent batches, which is a good starting point for performance testing.
+
 ### Environment Variables
 
 You can customize the test script behavior using the following environment variables:

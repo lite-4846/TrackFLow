@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:8000
+
+### Health Check
+GET {{baseUrl}}/health/kafka
+
+### Track Single Event
+POST {{baseUrl}}/tracking/events
+Content-Type: application/json
+
+{
+  "event": "page_view",
+  "page": "/home",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+  "ip": "192.168.1.1",
+  "timestamp": "2025-07-12T12:00:00Z"
+}
+
+### Track Multiple Events (Batch)
+POST {{baseUrl}}/tracking/events
+Content-Type: application/json
+
+[
+  {
+    "event": "button_click",
+    "button_id": "signup_button",
+    "page": "/signup",
+    "timestamp": "2025-07-12T12:00:01Z"
+  },
+  {
+    "event": "form_submit",
+    "form_id": "signup_form",
+    "fields": ["email", "name"],
+    "timestamp": "2025-07-12T12:00:05Z"
+  }
+]
+
+### Track Event with Custom Properties
+POST {{baseUrl}}/tracking/events
+Content-Type: application/json
+
+{
+  "event": "product_view",
+  "product_id": "prod_123",
+  "category": "electronics",
+  "price": 999.99,
+  "currency": "USD",
+  "user": {
+    "id": "user_456",
+    "is_logged_in": true
+  },
+  "metadata": {
+    "referrer": "https://example.com",
+    "utm_source": "newsletter"
+  },
+  "timestamp": "2025-07-12T12:01:00Z"
+}
+
+### Test Invalid Event (Missing Required Fields)
+POST {{baseUrl}}/tracking/events
+Content-Type: application/json
+
+{
+  "missing_event_field": true
+}
+
+### Test with Invalid JSON
+POST {{baseUrl}}/tracking/events
+Content-Type: application/json
+
+This is not valid JSON

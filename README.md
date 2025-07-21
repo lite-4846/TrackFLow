@@ -21,10 +21,7 @@ TrackFlow is a distributed event tracking system designed to handle high-through
    npm start:dev
    ```
 
-3. **ClickHouse Setup**
-   - Configure `<ip>::/0` in the ClickHouse users.d folder for Windows host access
-
-4. **Database Access**
+3. **Database Access**
    ```bash
    # Use beaver for database access
    beaver
@@ -41,11 +38,20 @@ TrackFlow is a distributed event tracking system designed to handle high-through
 - `/plans`: Project plans and roadmaps
 - `/docs`: Technical documentation and architecture decisions
 
+## Service Ports
+
+| Service     | Port  | Description                     |
+|-------------|-------|---------------------------------|
+| Backend     | 8000  | Main API and metrics endpoint   |
+| Tracker.js  | 8080  | Client-side tracking library    |
+| ClickHouse  | 8123  | HTTP interface                 |
+| Kafka       | 9092  | Message broker                 |
+| Zookeeper   | 2181  | Kafka dependency               |
+
 ## Quick Start
 1. **Tracker**: `http-server ./dist --cors -p 8080`
 2. **Backend**: `npm start:dev`
-3. **Clickhouse Setup**: Configure `<ip>::/0` in the ClickHouse users.d folder for Windows host access
-4. **Database Access**: Use beaver for database access
+3. **Database Access**: Use beaver for database access
 
 ## 📱 Integration
 
