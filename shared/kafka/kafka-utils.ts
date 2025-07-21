@@ -24,6 +24,7 @@ export class KafkaUtils {
     topicConfig: TopicConfig,
     retryAttempts = this.DEFAULT_RETRY_ATTEMPTS
   ): Promise<boolean> {
+    console.log(kafkaConfig);
     const kafka = new Kafka({
       ...kafkaConfig,
       logLevel: logLevel.INFO,
@@ -166,6 +167,7 @@ export class KafkaUtils {
     const kafka = new Kafka(kafkaConfig);
     const admin = kafka.admin();
 
+    console.log("config", kafkaConfig);
     try {
       await admin.connect();
       await admin.describeCluster();

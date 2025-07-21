@@ -1,0 +1,215 @@
+{
+  "__inputs": [],
+  "__elements": [],
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1710683,
+  "links": [],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Events Received (rate)",
+      "targets": [
+        {
+          "expr": "rate(events_received_total[1m])",
+          "legendFormat": "Received",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Events Produced (rate)",
+      "targets": [
+        {
+          "expr": "rate(events_produced_total[1m])",
+          "legendFormat": "Produced",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Events Produced vs Received",
+      "targets": [
+        {
+          "expr": "rate(events_received_total[1m])",
+          "legendFormat": "Received",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(events_produced_total[1m])",
+          "legendFormat": "Produced",
+          "refId": "B"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Total Events Received",
+      "targets": [
+        {
+          "expr": "events_received_total",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Total Events Produced",
+      "targets": [
+        {
+          "expr": "events_produced_total",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 16
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Total Events Aborted",
+      "targets": [
+        {
+          "expr": "events_aborted_total",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 16
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Pending Events",
+      "targets": [
+        {
+          "expr": "events_pending",
+          "refId": "A"
+        }
+      ],
+      "datasource": {
+        "type": "prometheus",
+        "uid": "aesb161f0wutcf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        }
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 16
+      }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Event Tracker - Backend Observability",
+  "uid": "nodejs-event-dashboard",
+  "version": 1,
+  "weekStart": ""
+}
