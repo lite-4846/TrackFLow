@@ -33,6 +33,7 @@ WORKDIR /app
 # Copy root + backend + shared metadata
 COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/backend/package.json ./backend/
+COPY --from=builder /app/backend/tsconfig.json ./backend/
 COPY --from=builder /app/shared/package.json ./shared/
 
 # Copy built artifacts

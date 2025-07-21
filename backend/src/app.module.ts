@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -10,7 +10,6 @@ import { TrackingModule } from './modules/tracking/tracking.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
 import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
-import { HttpMetricsMiddleware } from './common/middleware/http-metrics.middleware';
 
 @Module({
   imports: [
@@ -30,12 +29,4 @@ import { HttpMetricsMiddleware } from './common/middleware/http-metrics.middlewa
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // Apply HTTP metrics middleware to all routes except /metrics
-    consumer
-      .apply(HttpMetricsMiddleware)
-      .exclude('metrics')
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
-  }
-}
+export class AppModule {}

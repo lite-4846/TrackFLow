@@ -1,4 +1,4 @@
-import { Logger, Module, OnModuleInit, Inject, OnModuleDestroy } from '@nestjs/common';
+import { Logger, Module, Inject, OnModuleDestroy } from '@nestjs/common';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { MetricsService } from './metrics.service';
 
@@ -12,8 +12,6 @@ import { MetricsService } from './metrics.service';
       // Custom metrics will be registered in MetricsService
     }),
   ],
-  // Remove MetricsController from controllers since we're using PrometheusModule's endpoint
-  // controllers: [MetricsController],
   providers: [
     {
       provide: 'METRICS_SERVICE',

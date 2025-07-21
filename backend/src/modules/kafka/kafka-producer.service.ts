@@ -2,7 +2,7 @@ import { Injectable, OnModuleInit, Logger, OnModuleDestroy, Inject } from '@nest
 import { Kafka, Producer, logLevel, KafkaConfig } from 'kafkajs';
 import { KafkaUtils, TRACKING_EVENTS_TOPIC } from '@shared/kafka/kafka-utils';
 import { MetricsService } from '../metrics/metrics.service';
-
+import { EventTypes } from '../../constants/event-types.constants';
 // Default retry configuration
 const DEFAULT_RETRY_CONFIG = {
   maxRetries: 10,
@@ -194,71 +194,60 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     const messages = Array.isArray(message) ? message : [message];
     const batchSize = messages.length;
     
+    this.metrics.recordEventReceived(EventTypes.EVENTS.RECEIVED);
+
     try {
-      // Record received events
-      this.metrics.recordEventReceived('kafka_produce', { topic });
-      
-      // Update pending events count
-      this.metrics.updatePendingEvents(batchSize, 'kafka_produce');
-      
       if (!this.isConnected) {
         this.logger.warn('Attempting to produce message while not connected to Kafka. Initializing connection...');
         try {
           await this.initializeKafka();
         } catch (error) {
           const errorName = error instanceof Error ? error.name : 'unknown';
-          this.metrics.recordEventAborted(errorName, 'kafka_produce', { topic });
-          this.logger.error('Failed to initialize Kafka connection', error);
+          this.metrics.recordEventAborted(errorName, EventTypes.KAFKA.PRODUCE, { 
+            topic,
+            error: error instanceof Error ? error.message : String(error)
+          });
+          this.logger.error('Failed to produce messages', error);
           throw error;
         }
       }
       
-      // Execute the operation with processing time tracking
-      const result = await this.metrics.recordKafkaProcessingTime(
-        topic,
+      // Execute the operation with retry
+      const result = await this.withRetry(
         async () => {
-          return this.withRetry(
-            async () => {
-              return this.producer.send({
-                topic,
-                messages: messages.map(msg => ({
-                  value: JSON.stringify(msg)
-                })),
-              });
-            },
-            `message production to topic ${topic}`
-          );
-        }
+          return this.producer.send({
+            topic,
+            messages: messages.map(msg => ({
+              value: JSON.stringify(msg)
+            })),
+          });
+        },
+        `message production to topic ${topic}`
       );
       
-      // Record successful production
-      this.metrics.recordEventProduced(topic);
-      
-      // Update pending events count
-      this.metrics.updatePendingEvents(-batchSize, 'kafka_produce');
-      
+      // Record successful production of all messages in the batch
+      this.metrics.recordEventProduced(EventTypes.EVENTS.PRODUCED);
       return result;
       
     } catch (error) {
       // Record aborted events on failure
       this.metrics.recordEventAborted(
         'produce_error', 
-        'kafka_produce', 
+        EventTypes.EVENTS.PRODUCED, 
         { 
           topic,
-          error: error instanceof Error ? error.message : String(error)
+          error: error instanceof Error ? error.message : String(error),
+          batchSize: batchSize.toString()
         }
       );
       
-      // Update pending events count on error
-      this.metrics.updatePendingEvents(-batchSize, 'kafka_produce');
-      
-      this.logger.error('Failed to produce message to Kafka', {
-        topic,
-        error: error instanceof Error ? error.message : String(error),
-      });
-      
       throw error;
+      
+      // this.logger.error('Failed to produce message to Kafka', {
+      //   topic,
+      //   error: error instanceof Error ? error.message : String(error),
+      // });
+      // throw error;
     }
   }
 
@@ -306,7 +295,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       );
 
       if (!isBrokerAvailable) {
-        this.metrics.recordEventAborted('broker_unavailable', 'kafka_connection');
+        this.metrics.recordEventAborted(EventTypes.KAFKA.BROKER_UNAVAILABLE, EventTypes.KAFKA.CONNECTION);
         return false;
       }
 
