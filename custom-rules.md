@@ -1,22 +1,14 @@
----
-trigger: always_on
----
-
-Always Use pnpm.
-
 # Project Rules and Guidelines
 
 ## Code Quality
 
 1. **Consistent Code Style**
-
    - Follow PEP 8 style guide for Python
    - Use ESLint for JavaScript/TypeScript
    - Maintain consistent indentation (2 spaces)
    - Write clear, descriptive variable and function names
 
 2. **Documentation**
-
    - Document all public functions and classes
    - Add inline comments for complex logic
    - Keep README.md up to date
@@ -30,7 +22,6 @@ Always Use pnpm.
 ## Project Structure
 
 1. **File Organization**
-
    - Keep related files in the same directory
    - Use clear, descriptive folder names
    - Separate configuration files from source code
@@ -43,7 +34,6 @@ Always Use pnpm.
 ## Development Workflow
 
 1. **Git Workflow**
-
    - Create feature branches for new work
    - Use descriptive branch names
    - Make small, focused commits
@@ -65,7 +55,6 @@ Always Use pnpm.
 ## Security
 
 1. **Input Validation**
-
    - Validate all user inputs
    - Sanitize data before database operations
    - Use proper error handling
@@ -78,13 +67,11 @@ Always Use pnpm.
 ## Additional Guidelines
 
 1. **Communication**
-
    - Use clear, professional language
    - Document decisions and changes
    - Keep team members informed
 
 2. **Maintainability**
-
    - Write modular, reusable code
    - Avoid code duplication
    - Keep dependencies minimal
@@ -97,7 +84,6 @@ Always Use pnpm.
 ## Contributing
 
 1. **Code of Conduct**
-
    - Be respectful and professional
    - Follow community guidelines
    - Help new contributors

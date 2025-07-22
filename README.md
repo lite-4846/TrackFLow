@@ -1,121 +1,124 @@
-# TrackFlow - Real-time Event Tracking System
+# TrackFlow - Web Analytics Platform
 
-TrackFlow is a distributed event tracking system designed to handle high-throughput, real-time event data processing. The system is built with a microservices architecture, leveraging Kafka for event streaming and providing robust event processing capabilities.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+TrackFlow is a high-performance, self-hosted web analytics platform that gives you complete ownership and control over your analytics data. Built with scalability in mind, it can handle up to 10,000 events per second on modest hardware (6GB RAM, 6 cores).
+
+> **Note:** TrackFlow is currently in Alpha. It's fully functional but was primarily built for learning purposes. Many features are still evolving.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js
-- Docker (for Kafka and ClickHouse)
-- Beaver (for database access)
+- Docker and Docker Compose
+- 6GB+ RAM recommended for production workloads
 
-### Running the Applications
+### Running with Docker
 
-1. **Start Tracker**
+1. **Clone the repository**
    ```bash
-   http-server ./dist --cors -p 8080
+   git clone https://github.com/yourusername/TrackFLow.git
+   cd TrackFLow
    ```
 
-2. **Start Backend**
+2. **Start the services**
    ```bash
-   npm start:dev
+   docker-compose up -d
    ```
 
-3. **Database Access**
+   **Note for Linux users:** If you encounter a mount error, run:
    ```bash
-   # Use beaver for database access
-   beaver
+   sudo mount --make-shared /
    ```
+   Then try the docker-compose command again.
 
-## Key Features
-- Real-time event ingestion and processing
-- Scalable architecture using Kafka
-- TypeScript-based services
-- Modular design for easy extension
+3. **Access the services**
+   - **Frontend:** http://localhost:3000
+   - **Backend API:** http://localhost:8000
+   - **ClickHouse UI:** http://localhost:8123
+   - **Kafka UI:** http://localhost:8080
 
-## Project Structure
-- `/backend`: Core backend services and event processors
-- `/plans`: Project plans and roadmaps
-- `/docs`: Technical documentation and architecture decisions
+## 🏗️ Project Structure
 
-## Service Ports
+```
+trackflow/
+├── backend/      # NestJS backend service
+├── consumer/     # Kafka consumer service
+├── tracker/      # Client-side tracking library
+├── docs/         # Documentation
+└── docker-compose.yml  # Development environment setup
+```
 
-| Service     | Port  | Description                     |
-|-------------|-------|---------------------------------|
-| Backend     | 8000  | Main API and metrics endpoint   |
-| Tracker.js  | 8080  | Client-side tracking library    |
-| ClickHouse  | 8123  | HTTP interface                 |
-| Kafka       | 9092  | Message broker                 |
-| Zookeeper   | 2181  | Kafka dependency               |
+## 📊 Performance
 
-## Quick Start
-1. **Tracker**: `http-server ./dist --cors -p 8080`
-2. **Backend**: `npm start:dev`
-3. **Database Access**: Use beaver for database access
+- **Throughput:** 10,000 events/second
+- **Request Rate:** 500 requests/second
+- **Recommended Hardware:** 6GB RAM, 6 CPU cores
 
-## 📱 Integration
+## 🔌 Integration
 
-### For Next.js Applications
+### Browser Integration
 
-1. **Install Required Dependencies**
-   ```bash
-   npm install next-script
-   ```
+Add this script to your website's `<head>`:
 
-2. **Add TrackFlow Script to `_app.js` or `_app.tsx`**
-   ```jsx
-   import Script from 'next/script';
-   
-   function MyApp({ Component, pageProps }) {
-     return (
-       <>
-         <Script async src="http://localhost:8080/tracker.js" />
-         <Script
-           id="trackflow"
-           strategy="afterInteractive"
-           dangerouslySetInnerHTML={{
-             __html: `
-               window.dataLayer = window.dataLayer || [];
-               function track() {
-                 window.dataLayer.push(arguments);
-               }
-               track('config', 'YOUR_API_KEY'); // Replace with your actual API key
-             `,
-           }}
-         />
-         <Component {...pageProps} />
-       </>
-     );
-   }
-   
-   export default MyApp;
-   ```
+```html
+<script async src="http://your-domain.com/tracker.js"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function track() { window.dataLayer.push(arguments); }
+  track('init', 'YOUR_WEBSITE_ID');
+  track('pageview');
+</script>
+```
 
-### For React App (Vite)
+### Available Tracking Methods
 
-1. **Add TrackFlow Script to `public/index.html`**
-   Add this just before the closing `</head>` tag:
-   ```html
-   <script async src="http://localhost:8080/tracker.js"></script>
-   <script>
-     window.dataLayer = window.dataLayer || [];
-     function track() {
-       window.dataLayer.push(arguments);
-     }
-     track('config', 'YOUR_API_KEY'); // Replace with your actual API key
-   </script>
-   ```
-
-## Available Tracking Methods
-
-### Page View Tracking
 ```javascript
-track('pageView', {
-  title: document.title,
-  url: window.location.href
+// Page view tracking
+track('pageview');
+
+// Custom event tracking
+track('event', 'button_click', {
+  button_id: 'cta-button',
+  page_url: window.location.href
+});
+
+// E-commerce tracking
+track('ecommerce', 'purchase', {
+  transaction_id: '12345',
+  revenue: 29.99,
+  items: [{
+    sku: 'PROD001',
+    name: 'Premium Plan',
+    price: 29.99,
+    quantity: 1
+  }]
 });
 ```
 
+## 🔧 Development
+
+1. **Environment Setup**
+   ```bash
+   # Install dependencies
+   pnpm install
+   
+   # Start development servers
+   pnpm run dev
+   ```
+
+2. **Building for Production**
+   ```bash
+   pnpm run build
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ### Click Tracking
 ```javascript
 // Example: Add this to your button click handler
